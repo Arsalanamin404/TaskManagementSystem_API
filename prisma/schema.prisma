@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// we can also add a feature of created tasks that will show each use a created with task
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role           @default(USER)
+  tasks         Task[]         @relation("AssignedTasks")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  revoked   Boolean  @default(false)
+
+  @@index([userId])
+}
+
+model Task {
+  id               String   @id @default(uuid())
+  title            String
+  content          String?
+  status           Status   @default(NOT_STARTED)
+  assignedToUserId String?
+  assignedToUser   User?    @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+enum Status {
+  NOT_STARTED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  CANCELED
+}
+
+enum Role {
+  ADMIN
+  USER
+}
