@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,7 @@ async function bootstrap() {
   );
   try {
     app.setGlobalPrefix('api/v1');
+    app.use(cookieParser());
     await app.listen(port);
     console.log(`Server is running on http://localhost:${port}/api/v1`);
   } catch (err) {

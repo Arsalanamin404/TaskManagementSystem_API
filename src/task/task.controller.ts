@@ -18,7 +18,7 @@ import { paginationDto } from './dto/pagination.dto';
 
 @Controller('tasks')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

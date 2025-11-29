@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.0.0",
-  "engineVersion": "0c19ccc313cf9911a90d99d2ac2eb0280c76c513",
+  "clientVersion": "7.0.1",
+  "engineVersion": "f09f2815f091dbba658cdcd2264306d88bb5bda6",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\n// we can also add a feature of created tasks that will show each use a created with task\nmodel User {\n  id            String         @id @default(uuid())\n  email         String         @unique\n  password      String\n  name          String\n  role          Role           @default(USER)\n  tasks         Task[]         @relation(\"AssignedTasks\")\n  createdAt     DateTime       @default(now())\n  updatedAt     DateTime       @updatedAt\n  refreshTokens RefreshToken[]\n}\n\nmodel RefreshToken {\n  id        String   @id @default(uuid())\n  token     String   @unique\n  userId    String?\n  user      User?    @relation(fields: [userId], references: [id])\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  revoked   Boolean  @default(false)\n\n  @@index([userId])\n}\n\nmodel Task {\n  id               String   @id @default(uuid())\n  title            String\n  content          String?\n  status           Status   @default(NOT_STARTED)\n  assignedToUserId String?\n  assignedToUser   User?    @relation(\"AssignedTasks\", fields: [assignedToUserId], references: [id])\n  createdAt        DateTime @default(now())\n  updatedAt        DateTime @updatedAt\n}\n\nenum Status {\n  NOT_STARTED\n  IN_PROGRESS\n  PAUSED\n  COMPLETED\n  CANCELED\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n",
   "runtimeDataModel": {

@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
@@ -122,9 +123,32 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
-  async logout(user_id: string) {
-    await this.prisma.refreshToken.deleteMany({ where: { userId: user_id } });
+  async logout(userId: string) {
+    await this.prisma.refreshToken.updateMany({
+      where: {
+        userId,
+        revoked: false,
+        expiresAt: { gt: new Date() },
+      },
+      data: {
+        revoked: true,
+      },
+    });
+
     return { message: 'Logged out successfully' };
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { password, ...sanitizedUser } = user;
+    return sanitizedUser;
   }
 
   // HELPER METHODS
