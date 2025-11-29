@@ -16,18 +16,21 @@ import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Response } from 'express';
 import { Roles } from 'src/auth/decorators/role.decorator';
-import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { Role } from 'src/generated/prisma/enums';
+import { UpdateRoleDto } from './dto/update-role.dto';
 
 interface RequestWithUser extends Request {
   user: {
     sub: string;
+    role: Role;
   };
 }
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get('me')
   @HttpCode(200)
@@ -63,14 +66,14 @@ export class UserController {
 
   // admin only
   @Get()
-  @Roles('ADMIN')
+  @Roles(Role.ADMIN)
   @HttpCode(200)
   getAll() {
     return this.userService.allUsers();
   }
 
   @Get(':id')
-  @Roles('ADMIN')
+  @Roles(Role.ADMIN)
   @HttpCode(200)
   getById(@Param('id') id: string) {
     return this.userService.getProfile(id);
@@ -82,16 +85,16 @@ export class UserController {
   // updateById(@Param('id') id: string) { }
 
   @Delete(':id')
-  @Roles('ADMIN')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(Role.ADMIN)
+  @HttpCode(200)
   deleteById(@Param('id') id: string) {
     return this.userService.deleteUserAccount(id);
   }
 
   @Patch(':id/role')
-  @Roles('ADMIN')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  assignRole(@Param('id') id: string, @Body() body: UpdateUserRoleDto) { 
-    return this.userService.changeRole(id,body.role);
+  @Roles(Role.ADMIN)
+  @HttpCode(200)
+  assignRole(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
+    return this.userService.changeRole(id, dto.role);
   }
 }

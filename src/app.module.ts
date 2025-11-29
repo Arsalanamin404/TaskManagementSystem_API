@@ -23,12 +23,6 @@ import { RoleGuard } from './auth/guards/role.guard';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: RoleGuard,
-    },
-  ],
+  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

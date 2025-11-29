@@ -44,5 +44,7 @@ export class UserService {
       where: { id },
       data: { role },
     });
+
+    return { message: 'Role changed successfully' };
   }
 }
