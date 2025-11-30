@@ -1,0 +1,1386 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "description": "Returns profile information of the currently logged-in user.",
+        "operationId": "UserController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the authenticated user profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get authenticated user profile",
+        "tags": [
+          "User"
+        ]
+      },
+      "delete": {
+        "description": "Deletes the logged-in user account.",
+        "operationId": "UserController_deleteAccount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Account deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAccountResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Delete current user account",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Returns a list of all registered users. Admin access required.",
+        "operationId": "UserController_getAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns the list of all users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllUsersResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only admin can access this endpoint."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get all users (Admin)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "Returns the profile of a specific user using their ID. Admin only.",
+        "operationId": "UserController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns user details for the given ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only admin can access this endpoint."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get user by ID (Admin)",
+        "tags": [
+          "User"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a specific user account. Only Admin can perform this action.",
+        "operationId": "UserController_deleteById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User account deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAccountResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Only admin can access this endpoint."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Delete user by ID (Admin)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/{id}/role": {
+      "patch": {
+        "description": "Allows admin to assign or update the role (ADMIN/USER) of a user.",
+        "operationId": "UserController_assignRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User role updated successfully."
+          },
+          "400": {
+            "description": "Invalid role value."
+          },
+          "403": {
+            "description": "Only admin can access this endpoint."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Update user role (Admin)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/tasks": {
+      "post": {
+        "description": "Creates a new task. Only admins can access this endpoint.",
+        "operationId": "TaskController_createTask",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully."
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can create tasks."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Create a new task (Admin)",
+        "tags": [
+          "Task"
+        ]
+      },
+      "get": {
+        "description": "Returns a paginated list of all tasks. Admin only.",
+        "operationId": "TaskController_getAllTasks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Tasks fetched successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedTasksResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can view all tasks."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get all tasks (Admin)",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/tasks/{taskId}/assign/{userId}": {
+      "post": {
+        "description": "Assigns a task to a specific user. Admin only.",
+        "operationId": "TaskController_assignTask",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Task assigned successfully."
+          },
+          "400": {
+            "description": "Invalid task or user ID."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can assign tasks."
+          },
+          "404": {
+            "description": "Task or user not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Assign a task to a user (Admin)",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/tasks/{taskId}/status": {
+      "patch": {
+        "description": "Updates the status of a task assigned to the logged-in user.",
+        "operationId": "TaskController_updateTaskStatus",
+        "parameters": [
+          {
+            "name": "taskId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAssignedTaskStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task status updated successfully."
+          },
+          "400": {
+            "description": "Invalid status value."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Task not assigned to this user."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Update task status",
+        "tags": [
+          "Task"
+        ]
+      },
+      "get": {
+        "description": "Returns the current status of a task. Admin only.",
+        "operationId": "TaskController_GetTaskStatus",
+        "parameters": [
+          {
+            "name": "taskId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task status fetched successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAssignedTaskStatusDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can view this status."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get task status (Admin)",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/tasks/{id}": {
+      "put": {
+        "description": "Updates task details by ID. Admin only.",
+        "operationId": "TaskController_updateTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can update tasks."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Update a task (Admin)",
+        "tags": [
+          "Task"
+        ]
+      },
+      "get": {
+        "description": "Returns task details by ID for an authenticated user.",
+        "operationId": "TaskController_getTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task fetched successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get task by ID",
+        "tags": [
+          "Task"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a task by ID. Admin only.",
+        "operationId": "TaskController_deleteTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Task deleted successfully."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can delete tasks."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Delete task (Admin)",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/tasks/me": {
+      "get": {
+        "description": "Updates task details by ID. Admin only.",
+        "operationId": "TaskController_getMyTasks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Task updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "User not authenticated."
+          },
+          "403": {
+            "description": "Only admin can update tasks."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Update a task (Admin)",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/tasks/titles": {
+      "get": {
+        "description": "Returns a paginated list of task titles for quick selection/filtering.",
+        "operationId": "TaskController_getAllTaskTitles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Task titles fetched successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedTaskTitlesResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated."
+          }
+        },
+        "security": [
+          {
+            "accessToken": []
+          }
+        ],
+        "summary": "Get all task titles",
+        "tags": [
+          "Task"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Creates a new user account with email, password, and name.",
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or email already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Authenticates user with email & password and returns tokens.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful. Returns tokens.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid email or password.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "description": "Generates a new access token using a valid refresh token (cookie or body).",
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "New access token generated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Refresh access token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "Revokes the refresh token and clears the HTTP-only cookie.",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully. Token revoked.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Logout user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Task Management System API",
+    "description": "A fully functional Task Management System backend built with **NestJS**,\n      providing secure authentication, role-based access control, and task and user management endpoints.\n      ",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "accessToken": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "UserTaskDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "object",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "PAUSED",
+              "COMPLETED",
+              "CANCELED"
+            ],
+            "example": "NOT_STARTED"
+          },
+          "assignedToUserId": {
+            "type": "object",
+            "nullable": true
+          },
+          "assignedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "content",
+          "status",
+          "assignedToUserId",
+          "assignedAt",
+          "completedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UserProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique user ID",
+            "example": "c3f0f1f2-2d3a-4c1e-a9e6-1b1234567890"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "john@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full name of the user",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role of the user",
+            "example": "USER",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Account creation timestamp",
+            "example": "2025-01-25T10:15:30.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last updated timestamp",
+            "example": "2025-01-26T09:20:15.000Z"
+          },
+          "tasks": {
+            "description": "Tasks assigned to the user",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserTaskDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "createdAt",
+          "updatedAt",
+          "tasks"
+        ]
+      },
+      "DeleteAccountResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c3f0f1f2-2d3a-4c1e-a9e6-1b1234567890"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "example": "USER"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-01-25T10:15:30.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-01-26T09:20:15.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AllUsersResponseDto": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "description": "List of all registered users",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "users"
+        ]
+      },
+      "UpdateRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "Role to assign to the user",
+            "example": "ADMIN",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "CreateTaskDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateAssignedTaskStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of Tasks",
+            "example": "IN_PROGRESS",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "PAUSED",
+              "COMPLETED",
+              "CANCELED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "UpdateTaskDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TaskResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "3a95cdae-9f35-4c98-8ff1-13b9b72123de"
+          },
+          "title": {
+            "type": "string",
+            "example": "Fix login bug"
+          },
+          "content": {
+            "type": "object",
+            "example": "There is a redirect issue after login.",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "PAUSED",
+              "COMPLETED",
+              "CANCELED"
+            ],
+            "example": "NOT_STARTED"
+          },
+          "assignedToUserId": {
+            "type": "object",
+            "example": "b71f183e-9278-4c86-8ce8-748cadaa1e41",
+            "nullable": true
+          },
+          "assignedAt": {
+            "type": "object",
+            "example": "2025-01-25T10:12:45.000Z",
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "object",
+            "example": "2025-02-01T16:30:00.000Z",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-01-20T09:15:30.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-01-22T11:45:10.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "content",
+          "status",
+          "assignedToUserId",
+          "assignedAt",
+          "completedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "AssignedUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "example": "USER"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TaskWithAssignedUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "object",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "PAUSED",
+              "COMPLETED",
+              "CANCELED"
+            ],
+            "example": "NOT_STARTED"
+          },
+          "assignedToUserId": {
+            "type": "object",
+            "nullable": true
+          },
+          "assignedToUser": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssignedUserDto"
+              }
+            ]
+          },
+          "assignedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "completedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "content",
+          "status",
+          "assignedToUserId",
+          "assignedToUser",
+          "assignedAt",
+          "completedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PaginatedTasksResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskWithAssignedUserDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "TaskTitleDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Fix login bug"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "PaginatedTaskTitlesResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "List of task titles",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskTitleDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Total number of tasks"
+          },
+          "page": {
+            "type": "number",
+            "example": 1,
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "number",
+            "example": 10,
+            "description": "Items per page"
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 5,
+            "description": "Total number of pages"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Enter your email address",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Enter a valid password",
+            "example": "abcd12345"
+          },
+          "name": {
+            "type": "string",
+            "description": "Enter your full name",
+            "example": "Arsalan Rather"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name"
+        ]
+      },
+      "RegisterResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Enter a valid registered email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Enter a valid password",
+            "example": "abcd12345"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "token"
+        ]
+      },
+      "RefreshTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      }
+    }
+  }
+}

@@ -13,6 +13,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RegisterResponseDto } from './dto/register-response.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
 
 // Extend Request for cookies
 interface RequestWithCookies extends Request {
@@ -32,12 +36,40 @@ interface RequestWithUser extends Request {
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Creates a new user account with email, password, and name.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully.',
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Validation failed or email already exists.',
+    type: RegisterResponseDto,
+  })
   @Post('register')
   @HttpCode(201)
   register(@Body() data: RegisterDto) {
     return this.authService.register(data);
   }
 
+  @ApiOperation({
+    summary: 'Login user',
+    description: 'Authenticates user with email & password and returns tokens.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful. Returns tokens.',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid email or password.',
+    type: LoginResponseDto,
+  })
   @Post('login')
   @HttpCode(200)
   async login(
@@ -60,6 +92,21 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: 'Refresh access token',
+    description:
+      'Generates a new access token using a valid refresh token (cookie or body).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'New access token generated.',
+    type: RefreshTokenResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired refresh token.',
+    type: RefreshTokenResponseDto,
+  })
   @Post('refresh')
   @HttpCode(200)
   async refresh(
@@ -102,6 +149,20 @@ export class AuthController {
     return { accessToken };
   }
 
+  @ApiOperation({
+    summary: 'Logout user',
+    description: 'Revokes the refresh token and clears the HTTP-only cookie.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Logged out successfully. Token revoked.',
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'User not authenticated.',
+    type: RegisterResponseDto,
+  })
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)

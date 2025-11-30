@@ -13,7 +13,7 @@ import { Status } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class TaskService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async createTask(data: CreateTaskDto) {
     if (data.assignedToUserId) {
@@ -53,7 +53,7 @@ export class TaskService {
       throw new NotFoundException('Task not found');
     }
 
-    const updated_task = await this.prisma.task.update({
+    await this.prisma.task.update({
       where: { id: data.taskId },
       data: { assignedToUserId: data.assignedToUserId, assignedAt: new Date() },
       include: {
@@ -68,7 +68,7 @@ export class TaskService {
       },
     });
 
-    return { message: 'Task assigned successfully', task: updated_task };
+    return { message: 'Task assigned successfully' };
   }
 
   async updateAssignedTaskStatus(
@@ -89,7 +89,7 @@ export class TaskService {
 
     const isCompleted = data.status === Status.COMPLETED;
 
-    const updated_task = await this.prisma.task.update({
+    await this.prisma.task.update({
       where: { id: taskId },
       data: {
         status: data.status,
@@ -107,7 +107,7 @@ export class TaskService {
       },
     });
 
-    return { message: 'Task status updated successfully', task: updated_task };
+    return { message: 'Task status updated successfully' };
   }
 
   async getTaskStatus(taskId: string) {
