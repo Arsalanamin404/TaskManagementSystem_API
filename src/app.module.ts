@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { envConfig } from './config/envConfig';
 import { UserModule } from './user/user.module';
@@ -9,6 +7,7 @@ import { TaskModule } from './task/task.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CacheConfigModule } from './cache/cache-config.module';
 
 @Module({
   imports: [
@@ -29,14 +28,14 @@ import { APP_GUARD } from '@nestjs/core';
     PrismaModule,
     TaskModule,
     AuthModule,
+    CacheConfigModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}

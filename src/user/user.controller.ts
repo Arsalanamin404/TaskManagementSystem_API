@@ -42,7 +42,7 @@ interface RequestWithUser extends Request {
 @ApiBearerAuth('accessToken')
 @UseGuards(JwtAuthGuard, RoleGuard)
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get('me')
   @ApiOperation({

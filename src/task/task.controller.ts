@@ -49,7 +49,7 @@ interface RequestWithUser extends Request {
 @Controller('tasks')
 @ApiBearerAuth('accessToken')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService) {}
 
   // only admin can create tasks
   @Post()
@@ -249,9 +249,8 @@ export class TaskController {
   @ApiNotFoundResponse({ description: 'Task not found.' })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async deleteTask(@Param('id') id: string) {
-    await this.taskService.deleteTask(id);
-    return { message: 'Task deleted successfully' };
+    return this.taskService.deleteTask(id);
   }
 }
